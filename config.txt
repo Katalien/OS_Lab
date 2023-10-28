@@ -1,0 +1,2 @@
+./folder2 .jpg
+./folder1 .txt
