@@ -12,5 +12,4 @@ int main(int argc, char** argv) {
     Daemon::getInstance().createDaemon(argv[1]);
     Daemon::getInstance().run();
     return EXIT_SUCCESS;
-
 }
