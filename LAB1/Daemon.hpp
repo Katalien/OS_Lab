@@ -16,26 +16,12 @@
 #include <ctime>
 #include "Config.hpp"
 
-struct Data {
-    std::string directory; 
-    std::string file;      
-
-    Data(std::string dir, std::string fl) :
-        directory(dir), file(fl) {}
-
-    Data(const Data&) = default;
-    Data& operator=(const Data&) = default;
-    Data(Data&&) = default;
-    Data& operator = (Data&&) = default;
-};
-
 class Daemon {
 public:
     Daemon(Daemon const&) = delete;
     Daemon& operator = (Daemon const&) = delete;
     Daemon(Daemon&&) = delete;
     Daemon& operator = (Daemon&&) = delete;
-    Daemon() = default;
 
     static Daemon& getInstance() {
         static Daemon instance;
@@ -46,26 +32,22 @@ public:
         isRunning = false;  
     }
 
-    void createDaemon(std::string configPath);
+    void createDaemon(std::filesystem::path &configPath);
 
     void run();
-
-    void createLogFiles();
-
-    void signalHandler(int signal);
 
 private:
     std::chrono::seconds sleepTime = std::chrono::seconds(20);
 
-    const std::filesystem::path PID_PATH = std::filesystem::path{ "/var/run/daemon.pid" };
+    void createLogFiles();
+
+    const std::filesystem::path PID_PATH{"/var/run/daemon.pid"};
 
     std::filesystem::path configPath;
 
     std::filesystem::path directoryPath;
 
     bool isTerminated = false;
-  
-    std::vector<Data> data;
 
     bool isRunning = false;
 
@@ -74,5 +56,7 @@ private:
     void destructOldPid();
 
     void createPid();
+
+    Daemon() = default;
 
 };
