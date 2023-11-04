@@ -22,9 +22,9 @@ private:
 
     bool configReaded = false;
 
-public:
     ~Config() = default;
 
+public:
     static Config& getInstance() {
         static Config instance;
         return instance;

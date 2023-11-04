@@ -8,30 +8,51 @@
 #include "Daemon.hpp"
 #include "Config.hpp"
 
-void Daemon::createDaemon(std::string configPath) {
-        openlog("Daemon", LOG_PID, LOG_DAEMON);
+void signalHandler(int signal) {
+    switch (signal) {
+    case SIGTERM:
+        syslog(LOG_INFO, "Process terminated");
+        Daemon::getInstance().stop();
+        closelog();
+        break;
+    case SIGHUP:
         syslog(LOG_INFO, "Read config");
-        Config::getInstance().setConfigPath(configPath);
-        if (!Config::getInstance().readConfig()) {
-            syslog(LOG_INFO, "Config file doesn't exists ot it is not in the correct format");
-        }
-        destructOldPid();
-        createPid();
-        isRunning = true;
+        if (!Config::getInstance().readConfig())
+            syslog(LOG_INFO, "Config is not in the correct format");
+        break;
+    default:
+        syslog(LOG_INFO, "Unknown signal found");
+        break;
     }
+}
+
+void Daemon::createDaemon(std::filesystem::path &configPath) {
+    openlog("Daemon", LOG_PID, LOG_DAEMON);
+    syslog(LOG_INFO, "Read config");
+    Config::getInstance().setConfigPath(configPath);
+    if (!Config::getInstance().readConfig()) {
+        syslog(LOG_INFO, "Config file doesn't exists ot it is not in the correct format");
+    }
+    destructOldPid();
+    createPid();
+    std::signal(SIGHUP, signalHandler);
+    std::signal(SIGTERM, signalHandler);
+    isRunning = true;
+ }
 
 void Daemon::run() {
-        while (isRunning) {
-            if (Config::getInstance().isConfigReaded()) {
-                syslog(LOG_INFO, "START RUN PROCESS");
-                createLogFiles();
-                sleep(Config::getInstance().getSleepDuration());
-            }
-            else {
-                syslog(LOG_INFO, "Config not read");
-            }
+    while (isRunning) {
+        if (Config::getInstance().isConfigReaded()) {
+            syslog(LOG_INFO, "START RUN PROCESS");
+            createLogFiles();
+            sleep(Config::getInstance().getSleepDuration());
         }
+        else {
+            syslog(LOG_INFO, "Config not read");
+        }
+        std::this_thread::sleep_for(std::chrono::seconds(sleepTime));
     }
+}
 
 void Daemon::createLogFiles() {
     syslog(LOG_INFO, "Start create log files");
@@ -67,23 +88,7 @@ void Daemon::createLogFiles() {
     } while (Config::getInstance().next());
 }
 
-void Daemon::signalHandler(int signal) {
-    switch (signal) {
-    case SIGTERM:
-        syslog(LOG_INFO, "Process terminated");
-        getInstance().stop();
-        closelog();
-        break;
-    case SIGHUP:
-        syslog(LOG_INFO, "Read config");
-        if (!Config::getInstance().readConfig())
-            syslog(LOG_INFO, "Config is not in the correct format");
-        break;
-    default:
-        syslog(LOG_INFO, "Unknown signal found");
-        break;
-    }
-}
+
 
 bool Daemon::pathExist(const std::string& path) const {
     bool exists = std::filesystem::exists(path);
@@ -95,23 +100,23 @@ bool Daemon::pathExist(const std::string& path) const {
 }
 
 void Daemon::destructOldPid() {
-        syslog(LOG_INFO, "Destruct old pid");
-        std::ifstream file;
+    syslog(LOG_INFO, "Destruct old pid");
+    std::ifstream file;
 
-        file.open(PID_PATH);
-        if (!file) {
-            syslog(LOG_INFO, "Can't check that old pid");
-            return;
-        }
-
-        int pid;
-        if (file >> pid){
-            if (kill(pid, 0) == 0)
-                kill(pid, SIGTERM);
-        }
-
-        file.close();
+    file.open(PID_PATH);
+    if (!file) {
+        syslog(LOG_INFO, "Can't check that old pid");
+        return;
     }
+
+    int pid;
+    if (file >> pid){
+        if (kill(pid, 0) == 0)
+            kill(pid, SIGTERM);
+    }
+
+    file.close();
+}
     
 void Daemon::createPid() {
     syslog(LOG_INFO, "Fork");
