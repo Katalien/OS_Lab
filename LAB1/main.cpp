@@ -5,7 +5,7 @@
 
 int main(int argc, char** argv) {
     if (argc != 2) {
-        std::cout << "You must enter an argument" << std::endl;
+        std::cout << "You must enter the path to config file" << std::endl;
         return EXIT_FAILURE;
     }
     std::string relPath = argv[1];
