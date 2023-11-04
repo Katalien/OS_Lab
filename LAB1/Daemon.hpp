@@ -28,10 +28,6 @@ public:
         return instance;
     }
 
-    void stop() {
-        isRunning = false;  
-    }
-
     void createDaemon(std::filesystem::path &configPath);
 
     void run();
@@ -58,5 +54,7 @@ private:
     void createPid();
 
     Daemon() = default;
+
+    void stop() { isRunning = false; }
 
 };
