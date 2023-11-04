@@ -8,8 +8,10 @@ int main(int argc, char** argv) {
         std::cout << "You must enter an argument" << std::endl;
         return EXIT_FAILURE;
     }
-    const std::string path = "./config.txt";
-    Daemon::getInstance().createDaemon(argv[1]);
+    std::string relPath = argv[1];
+    std::filesystem::path absolutePath = std::filesystem::absolute(relPath);
+    Daemon::getInstance().createDaemon(absolutePath);
     Daemon::getInstance().run();
     return EXIT_SUCCESS;
+
 }
