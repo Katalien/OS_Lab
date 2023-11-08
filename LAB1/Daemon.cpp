@@ -12,8 +12,8 @@ void signalHandler(int signal) {
     switch (signal) {
     case SIGTERM:
         syslog(LOG_INFO, "Process terminated");
-        Daemon::getInstance().stop();
         closelog();
+        exit(EXIT_SUCCESS);
         break;
     case SIGHUP:
         syslog(LOG_INFO, "Read config");
@@ -41,18 +41,17 @@ void Daemon::createDaemon(std::filesystem::path &configPath) {
  }
 
 void Daemon::run() {
-    while (isRunning) {
-        if (Config::getInstance().isConfigReaded()) {
-            syslog(LOG_INFO, "START RUN PROCESS");
-            createLogFiles();
-            sleep(Config::getInstance().getSleepDuration());
+        while (isRunning) {
+            if (Config::getInstance().isConfigReaded()) {
+                syslog(LOG_INFO, "START RUN PROCESS");
+                createLogFiles();
+                std::this_thread::sleep_for(std::chrono::seconds(sleepTime));
+            }
+            else {
+                syslog(LOG_INFO, "Config not read");
+            }
         }
-        else {
-            syslog(LOG_INFO, "Config not read");
-        }
-        std::this_thread::sleep_for(std::chrono::seconds(sleepTime));
     }
-}
 
 void Daemon::createLogFiles() {
     syslog(LOG_INFO, "Start create log files");

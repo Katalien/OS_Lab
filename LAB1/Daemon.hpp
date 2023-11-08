@@ -32,8 +32,6 @@ public:
 
     void run();
 
-    void stop() { isRunning = false; }
-
 private:
     std::chrono::seconds sleepTime = std::chrono::seconds(20);
 
