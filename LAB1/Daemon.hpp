@@ -32,6 +32,8 @@ public:
 
     void run();
 
+    void stop() { isRunning = false; }
+
 private:
     std::chrono::seconds sleepTime = std::chrono::seconds(20);
 
@@ -54,7 +56,5 @@ private:
     void createPid();
 
     Daemon() = default;
-
-    void stop() { isRunning = false; }
 
 };
