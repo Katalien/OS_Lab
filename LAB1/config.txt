@@ -1,0 +1,3 @@
+/home/katherine/source/Lab1/folder2/ .jpg
+/home/katherine/source/Lab1/folder1/ .txt
+/home/katherine/source/Lab1/folder3/ .txt
