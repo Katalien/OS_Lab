@@ -48,5 +48,3 @@ void mq::Send(void* buf, size_t count){
 void mq::Close(void){
     mq_close(m_queue);
 }
-
-mq::~mq(void){}

@@ -62,5 +62,3 @@ void sock::Close(void){
     close(m_client_socket);
   }
 }
-
-sock::~sock(void){}

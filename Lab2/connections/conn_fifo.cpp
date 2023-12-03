@@ -41,5 +41,3 @@ void fifo::Close(void) {
     if (m_isHost)
       unlink(m_fifoName.c_str());
 }
-
-fifo::~fifo(void){}

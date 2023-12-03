@@ -13,7 +13,6 @@ public:
     void Get(void* buf, size_t count) override;
     void Send(void* buf, size_t count) override;
     void Close(void) override;
-    ~mq(void);
 
 private:
     static const int BULK_SIZE = 1024;

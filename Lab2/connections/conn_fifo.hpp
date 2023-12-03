@@ -8,12 +8,11 @@
 class fifo : public Connection {
 public:
     fifo(pid_t clientPid, bool isHost);
-    std::string GetName(void) { return m_fifoName; }
+    std::string GetName(void) const { return m_fifoName; }
     void Open(size_t hostPid, bool isCreator) override;
     void Get(void *buf, size_t count) override;
     void Send(void *buf, size_t count) override;
     void Close(void) override;
-    ~fifo(void);
 
 private:
     std::string m_fifoName;

@@ -12,7 +12,6 @@ public:
     void Get(void* buf, size_t count) override;
     void Send(void* buf, size_t count) override;
     void Close(void) override;
-    ~sock(void);
 
 private:
     socklen_t m_host_socket, m_client_socket;
